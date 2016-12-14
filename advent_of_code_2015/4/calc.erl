@@ -8,21 +8,22 @@
 %%%-------------------------------------------------------------------
 -module(calc).
 -author("marcin").
--define(PATTERN,[$0,$0,$0,$0,$0]).
 
 %% API
--export([md5_hash/1]).
-md5_hash(Key) -> md5_hash(Key,[$1],[]).
-md5_hash(Key,Sum,Hash) ->
-  Result = md5_sum(Hash),
-  case lists:prefix(?PATTERN,Result) of
-    true -> Result;
-    false -> if Sum =< $9 -> md5_hash(Key,increase_hash(Sum),Hash);
-           Sum > $9 -> md5_hash(Key,[$0],append_new_hash(Hash))
-            end
+-export([suffixToKey/1,suffixToKey2/1]).
+suffixToKey(Key) -> suffixToKey(Key,1).
+suffixToKey(Key, Counter) ->
+  case erlang:md5(Key ++ integer_to_list(Counter)) of
+    <<0, 0,  Byte, _Rest/binary>> when Byte =< 15 -> Counter;
+                                                _ -> suffixToKey(Key, Counter + 1)
   end.
-increase_hash(InputHash) -> InputHash+1.
-append_new_hash(Hash) -> Hash++[$0].
-md5_sum(InputKey)-> binary:bin_to_list(erlang:md5(InputKey)).
+suffixToKey2(Key) -> suffixToKey2(Key,1).
+suffixToKey2(Key,Counter) ->
+  case erlang:md5(Key ++ integer_to_list(Counter)) of
+    <<0, 0, 0, _Rest/binary>> -> Counter;
+                            _ -> suffixToKey2(Key, Counter + 1)
+  end.
+
+
 
 
