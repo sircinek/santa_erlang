@@ -8,11 +8,11 @@
 %%%-------------------------------------------------------------------
 -module(path).
 -author("marcin").
-
+-define(STARTING_CORDS,{0,0}).
 %% API
 -export([count_gifts/2]).
-track_movement(Input,santa) -> track_movement(Input,{0,0},[{0,0}]);
-track_movement(Input,robot) -> track_movement(Input,{0,0},{0,0},[{0,0}],santa);
+track_movement(Input,santa) -> track_movement(Input,?STARTING_CORDS,[?STARTING_CORDS]);
+track_movement(Input,robot) -> track_movement(Input,?STARTING_CORDS,?STARTING_CORDS,[?STARTING_CORDS],santa);
 track_movement(_,_) -> io:format("Invalid gift list or deliverer !~n").
 track_movement([],_, Coordinates) -> Coordinates;
 track_movement([H|T],Santa_cords, Coordinates)  -> Change = move(H,Santa_cords),
