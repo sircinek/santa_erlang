@@ -10,7 +10,7 @@
 -author("marcin").
 
 %% API
--export([track_movement/1,count_gifts/1]).
+-export([count_gifts/1]).
 track_movement(Input) -> track_movement(Input,{0,0},[{0,0}]).
 track_movement([],_, Coordinates) -> Coordinates;
 track_movement([H|T],{X,Y}, Coordinates) when H == $^ -> track_movement(T,{X,Y+1}, add_to_list({X,Y+1},Coordinates));
@@ -22,4 +22,4 @@ add_to_list(New,Current) ->
     true -> Current;
     false -> [New|Current]
   end.
-count_gifts(Houses) -> length(Houses).
+count_gifts(Input) -> length(track_movement((Input))).
