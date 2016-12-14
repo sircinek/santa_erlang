@@ -22,4 +22,4 @@ add_to_list(New,Current) ->
     true -> Current;
     false -> [New|Current]
   end.
-count_gifts(Houses) -> lists:sum(Houses).
+count_gifts(Houses) -> length(Houses).
