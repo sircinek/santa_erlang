@@ -11,12 +11,16 @@
 
 %% API
 -export([solve/1,move/3]).
-solve(Input) -> solve(Input,{up,0,0}).
-solve([],{_,X,Y})-> abs(X)+abs(Y);
-solve([[Direction|Number]|Rest],CurrentPosition)->
+solve(Input) -> solve(Input,{up,0,0},[]).
+solve([],{_,X,Y},_)-> abs(X)+abs(Y);
+solve([[Direction|Number]|Rest],CurrentPosition,ListOfVisitedCoordinates)->
   {Length,_}=string:to_integer(Number),
-  solve(Rest,move(Direction,CurrentPosition,Length)).
-
+  {_,X,Y} = CurrentPosition,
+  case lists:member({X,Y},ListOfVisitedCoordinates) of
+    true ->  abs(X)+abs(Y);
+    false -> [{X,Y}|ListOfVisitedCoordinates]
+  end,
+  solve(Rest,move(Direction,CurrentPosition,Length),ListOfVisitedCoordinates).
 move(Direction,{up,X,Y},Length) when Direction == $L -> {left,X-Length,Y};
 move(Direction,{up,X,Y},Length) when Direction == $R -> {right,X+Length,Y};
 move(Direction,{down,X,Y},Length) when Direction == $L -> {right,X+Length,Y};
