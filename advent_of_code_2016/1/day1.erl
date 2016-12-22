@@ -10,30 +10,65 @@
 -author("marcin").
 
 %% API
--export([solve/1,move/3]).
-solve(Input) -> solve(Input,{up,0,0},[]).
-solve([],{_,X,Y},_)-> abs(X)+abs(Y);
-solve([[Direction|Number]|Rest],CurrentPosition,ListOfVisitedCoordinates)->
-  {Length,_}=string:to_integer(Number),
-  {_,X,Y} = CurrentPosition,
-  case lists:member({X,Y},ListOfVisitedCoordinates) of
-    true ->  abs(X)+abs(Y);
-    false -> [{X,Y}|ListOfVisitedCoordinates]
-  end,
-  solve(Rest,move(Direction,CurrentPosition,Length),ListOfVisitedCoordinates).
-move(Direction,{up,X,Y},Length) when Direction == $L -> {left,X-Length,Y};
-move(Direction,{up,X,Y},Length) when Direction == $R -> {right,X+Length,Y};
-move(Direction,{down,X,Y},Length) when Direction == $L -> {right,X+Length,Y};
-move(Direction,{down,X,Y},Length) when Direction == $R -> {left,X-Length,Y};
-move(Direction,{left,X,Y},Length) when Direction == $L -> {down,X,Y-Length};
-move(Direction,{left,X,Y},Length) when Direction == $R -> {up,X,Y+Length};
-move(Direction,{right,X,Y},Length) when Direction == $L -> {up,X,Y+Length};
-move(Direction,{right,X,Y},Length) when Direction == $R -> {down,X,Y-Length}.
+-export([part1/1, part2/1]).
+part1(Input) -> part1(Input,[{up,0,0}]).
+part1([],[{_,X,Y}|_])-> abs(X)+abs(Y);
+part1([[Direction|Number]|Rest],ListOfCoordinates)->
+  Distance = calculateDistance(Number),
+  [CurrentCoordinates|_] = ListOfCoordinates,
+  NewDirection = switchDirection(Direction,CurrentCoordinates),
+  NewCords = move(NewDirection,ListOfCoordinates,Distance),
+   part1(Rest,NewCords).
+part2(Input) -> part2(Input,undefined,[{up,0,0}]).
+part2(_,ok,[{_,X,Y}|_]) ->abs(X)+abs(Y);
+part2([[Direction|Number]|Rest],undefined,ListOfCoordinates)->
+Distance = calculateDistance(Number),
+[CurrentCoordinates|_] = ListOfCoordinates,
+NewDirection = switchDirection(Direction,CurrentCoordinates),
+NewCords = move(NewDirection,ListOfCoordinates,Distance) ->
 
 
+move(left,ListOfCoordinates,Distance) when Distance =/= 0 ->
+  [{_,X,Y}|_]=ListOfCoordinates,
+  move(left,updateCoordslist({left,X-1,Y},ListOfCoordinates),Distance-1);
+move(right,ListOfCoordinates,Distance) when Distance =/= 0 ->
+  [{_,X,Y}|_]=ListOfCoordinates,
+  move(right,updateCoordslist({right,X+1,Y},ListOfCoordinates),Distance-1);
+move(up,ListOfCoordinates,Distance) when Distance =/= 0 ->
+  [{_,X,Y}|_]=ListOfCoordinates,
+  move(up,updateCoordslist({up,X,Y+1},ListOfCoordinates),Distance-1);
+move(down,ListOfCoordinates,Distance) when Distance =/= 0 ->
+  [{_,X,Y}|_]=ListOfCoordinates,
+  move(down,updateCoordslist({down,X,Y-1},ListOfCoordinates),Distance-1);
+move(_,ListOfCoordinates,0)->ListOfCoordinates.
 
+calculateDistance(Number) ->
+  {Distance,_} = string:to_integer(Number),
+  Distance.
+switchDirection(Direction,{up,_,_}) ->
+  case Direction of
+    $L -> left;
+    $R -> right
+  end;
+switchDirection(Direction,{down,_,_}) ->
+  case Direction of
+    $L -> right;
+    $R -> left
+  end;
+switchDirection(Direction,{left,_,_}) ->
+  case Direction of
+    $L -> down;
+    $R -> up
+  end;
+switchDirection(Direction,{right,_,_}) ->
+  case Direction of
+    $L -> up;
+    $R -> down
+  end.
+updateCoordslist (NewCords,List)->
+  [NewCords|List].
 
-
+%%checkDuplicates()
 
 
 
